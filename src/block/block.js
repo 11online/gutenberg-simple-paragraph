@@ -29,7 +29,7 @@ registerBlockType( 'elevenonline/block-gutenberg-simple-paragraph', {
 	],
 	attributes: { // attributes is what we can interact with
 		content: {
-			type: 'array',
+			type: 'string',
 			source: 'children',
 			selector: 'p',
 			default: '',
@@ -49,8 +49,7 @@ registerBlockType( 'elevenonline/block-gutenberg-simple-paragraph', {
 		return (
 			<Fragment>
 				{
-					isSelected
-						?
+					isSelected ?
 							<PlainText
 								tagName="p"
 								className={className}
@@ -60,10 +59,8 @@ registerBlockType( 'elevenonline/block-gutenberg-simple-paragraph', {
 										content: newContent,
 									} );
 								} }
-								placeholder={ __( 'Add text or type / to add content' ) }
 							/>
-						:
-							<p className={className}>{content}</p>
+					: <p className={className}>{content}</p>
 				}
 			</Fragment>
 		);
