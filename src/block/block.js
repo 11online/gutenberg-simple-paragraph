@@ -1,23 +1,17 @@
-/**
- * BLOCK: gutenberg-simple-paragraph
- *
- * Registering a basic block with Gutenberg.
- * Simple block, renders and saves the same content without any interactivity.
- */
-
 //  Import CSS.
 import './style.scss';
 import './editor.scss';
 
 const { __ } = wp.i18n; // Import __() from wp.i18n
 const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.blocks
+const { PlainText } = wp.editor; // import Gutenberg default components here
+const { Fragment } = wp.element;
 
 /**
- * Register: aa Gutenberg Block.
+ * Register: a Gutenberg Block.
  *
  * Registers a new block provided a unique name and an object defining its
- * behavior. Once registered, the block is made editor as an option to any
- * editor interface where blocks are implemented.
+ * behavior. 
  *
  * @link https://wordpress.org/gutenberg/handbook/block-api/
  * @param  {string}   name     Block name.
@@ -25,16 +19,22 @@ const { registerBlockType } = wp.blocks; // Import registerBlockType() from wp.b
  * @return {?WPBlock}          The block, if it has been successfully
  *                             registered; otherwise `undefined`.
  */
-registerBlockType( 'cgb/block-gutenberg-simple-paragraph', {
+registerBlockType( 'elevenonline/block-gutenberg-simple-paragraph', {
 	// Block name. Block names must be string that contains a namespace prefix. Example: my-plugin/my-custom-block.
-	title: __( 'gutenberg-simple-paragraph - CGB Block' ), // Block title.
-	icon: 'shield', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
+	title: __( 'Simple Paragraph' ), // Block title.
+	icon: 'editor-paragraph', // Block icon from Dashicons → https://developer.wordpress.org/resource/dashicons/.
 	category: 'common', // Block category — Group blocks together based on common traits E.g. common, formatting, layout widgets, embed.
 	keywords: [
-		__( 'gutenberg-simple-paragraph — CGB Block' ),
-		__( 'CGB Example' ),
-		__( 'create-guten-block' ),
+		__( 'Simple Paragraph' ),
 	],
+	attributes: { // attributes is what we can interact with
+		content: {
+			type: 'array',
+			source: 'children',
+			selector: 'p',
+			default: '',
+		}
+	},
 
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
@@ -44,23 +44,28 @@ registerBlockType( 'cgb/block-gutenberg-simple-paragraph', {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	edit: function( props ) {
-		// Creates a <p class='wp-block-cgb-block-gutenberg-simple-paragraph'></p>.
+	edit: function({attributes, setAttributes, className, isSelected}) {
+		const { content } = attributes;
 		return (
-			<div className={ props.className }>
-				<p>— Hello from the backend.</p>
-				<p>
-					CGB BLOCK: <code>gutenberg-simple-paragraph</code> is a new Gutenberg block
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
-			</div>
+			<Fragment>
+				{
+					isSelected
+						?
+							<PlainText
+								tagName="p"
+								className={className}
+								value={ content }
+								onChange={ ( newContent ) => {
+									setAttributes( {
+										content: newContent,
+									} );
+								} }
+								placeholder={ __( 'Add text or type / to add content' ) }
+							/>
+						:
+							<p className={className}>{content}</p>
+				}
+			</Fragment>
 		);
 	},
 
@@ -72,22 +77,10 @@ registerBlockType( 'cgb/block-gutenberg-simple-paragraph', {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	save: function( props ) {
+	save: function({attributes, className}) {
+		const { content } = attributes;
 		return (
-			<div>
-				<p>— Hello from the frontend.</p>
-				<p>
-					CGB BLOCK: <code>gutenberg-simple-paragraph</code> is a new Gutenberg block.
-				</p>
-				<p>
-					It was created via{ ' ' }
-					<code>
-						<a href="https://github.com/ahmadawais/create-guten-block">
-							create-guten-block
-						</a>
-					</code>.
-				</p>
-			</div>
+			<p className={className}>{content}</p>
 		);
 	},
 } );
